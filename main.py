@@ -2,6 +2,7 @@ from flask import Flask, render_template, redirect, url_for, flash, abort
 from flask_bootstrap import Bootstrap
 from flask_ckeditor import CKEditor
 from datetime import date
+import datetime
 from functools import wraps
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
@@ -9,6 +10,9 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm
 from flask_gravatar import Gravatar
+
+WEBSITE_NAME = "Vio's Website"
+YEAR = datetime.date.today().year
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
@@ -77,7 +81,7 @@ def admin_only(f):
 @app.route('/')
 def get_all_posts():
     posts = BlogPost.query.all()
-    return render_template("index.html", all_posts=posts, current_user=current_user)
+    return render_template("index.html", all_posts=posts, year=YEAR, website_name=WEBSITE_NAME , current_user=current_user)
 
 
 @app.route('/register', methods=["GET", "POST"])
@@ -106,7 +110,7 @@ def register():
         login_user(new_user)
         return redirect(url_for("get_all_posts"))
 
-    return render_template("register.html", form=form, current_user=current_user)
+    return render_template("register.html", year=YEAR, website_name=WEBSITE_NAME, form=form, current_user=current_user)
 
 
 @app.route('/login', methods=["GET", "POST"])
@@ -127,7 +131,7 @@ def login():
         else:
             login_user(user)
             return redirect(url_for('get_all_posts'))
-    return render_template("login.html", form=form, current_user=current_user)
+    return render_template("login.html", form=form, year=YEAR, website_name=WEBSITE_NAME, current_user=current_user)
 
 
 @app.route('/logout')
@@ -154,17 +158,17 @@ def show_post(post_id):
         db.session.add(new_comment)
         db.session.commit()
 
-    return render_template("post.html", post=requested_post, form=form, current_user=current_user)
+    return render_template("post.html", post=requested_post, form=form, website_name=WEBSITE_NAME, year=YEAR, current_user=current_user)
 
 
 @app.route("/about")
 def about():
-    return render_template("about.html", current_user=current_user)
+    return render_template("about.html", year=YEAR, website_name=WEBSITE_NAME, current_user=current_user)
 
 
 @app.route("/contact")
 def contact():
-    return render_template("contact.html", current_user=current_user)
+    return render_template("contact.html", year=YEAR, website_name=WEBSITE_NAME, current_user=current_user)
 
 
 @app.route("/new-post", methods=["GET", "POST"])
@@ -184,7 +188,7 @@ def add_new_post():
         db.session.commit()
         return redirect(url_for("get_all_posts"))
 
-    return render_template("make-post.html", form=form, current_user=current_user)
+    return render_template("make-post.html", form=form, year=YEAR, website_name=WEBSITE_NAME, current_user=current_user)
 
 
 
@@ -208,7 +212,7 @@ def edit_post(post_id):
         db.session.commit()
         return redirect(url_for("show_post", post_id=post.id))
 
-    return render_template("make-post.html", form=edit_form, is_edit=True, current_user=current_user)
+    return render_template("make-post.html", form=edit_form, year=YEAR, website_name=WEBSITE_NAME, is_edit=True, current_user=current_user)
 
 
 @app.route("/delete/<int:post_id>")
