@@ -10,12 +10,15 @@ from sqlalchemy.orm import relationship
 from flask_login import UserMixin, login_user, LoginManager, login_required, current_user, logout_user
 from forms import LoginForm, RegisterForm, CreatePostForm, CommentForm
 from flask_gravatar import Gravatar
+from dotenv import load_dotenv
+import os
 
 WEBSITE_NAME = "Vio's Website"
 YEAR = datetime.date.today().year
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
+load_dotenv()
+app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'  #os.getenv('KEY')
 ckeditor = CKEditor(app)
 Bootstrap(app)
 app.app_context().push()
